@@ -18,9 +18,10 @@ class DeliverCarrier(models.Model):
     envia_tipo_envio = fields.Selection([
         ('1', 'Envio Normal')
         ], string='Tipo de Envio', default='1')
+    envia_precio = fields.Float('Precio', groups='base.group_system')
 
     def envia_rate_shipment(self, order):
-        return {'success': True, 'price': 0.00, 'error_message': '', 'warning_message': ''}
+        return {'success': True, 'price': self.sudo().envia_precio}
 
     def envia_send_shipping(self, pickings):
         shippings = []
@@ -40,7 +41,7 @@ class DeliverCarrier(models.Model):
         token = res['token']
 
         if not token:
-            return { 'exact_price': 0.00, 'tracking_number': '' }
+            raise UserError('No se pude conectar con servicio de Envía')
         
         for p in pickings:
             headers = {
@@ -64,11 +65,15 @@ class DeliverCarrier(models.Model):
             logging.warning(r.text)
             res = r.json()
 
+            if 'id' not in res:
+                errores = (', ').join([x['msg']+' '+x['param'] for x in res['errors']])
+                raise UserError('Error generado por Envía: '+errores)
+
             p.envia_id = res['id']
             p.envia_code_envia = res['codeEnvia']
             p.envia_code_cliente = res['codeCliente']
             p.envia_pdf = res['guiaPDF']
             
-            shippings = shippings + [{ 'exact_price': 0.00, 'tracking_number': p.envia_code_envia }]
+            shippings = shippings + [{ 'exact_price': self.sudo().envia_precio, 'tracking_number': p.envia_code_envia }]
 
         return shippings

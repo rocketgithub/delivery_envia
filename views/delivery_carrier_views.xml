@@ -14,6 +14,7 @@
                                 <field name="envia_usuario" attrs="{'required': [('delivery_type', '=', 'envia')]}"/>
                                 <field name="envia_clave" attrs="{'required': [('delivery_type', '=', 'envia')]}"/>
                                 <field name="envia_tipo_envio" attrs="{'required': [('delivery_type', '=', 'envia')]}"/>
+                                <field name="envia_precio" attrs="{'required': [('delivery_type', '=', 'envia')]}"/>
                             </group>
                         </group>
                     </page>
