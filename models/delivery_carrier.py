@@ -21,7 +21,7 @@ class DeliverCarrier(models.Model):
     envia_precio = fields.Float('Precio', groups='base.group_system')
 
     def envia_rate_shipment(self, order):
-        return {'success': True, 'price': self.sudo().envia_precio}
+        return {'success': True, 'price': self.sudo().envia_precio, 'error_message': '', 'warning_message': ''}
 
     def envia_send_shipping(self, pickings):
         shippings = []
